@@ -135,7 +135,7 @@ GLvoid Mouse(int button, int state, int x, int y)
 {
 	float Mouse_x = mapToGLCoordX(x);
 	float Mouse_y = mapToGLCoordY(y);
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {	// 왼쪽 클릭
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {	// 좌클릭
 		left_button = true;
 		for (int i = rectangles.size() - 1; i > 0; --i) {
 			if (rectangles[i].is_contain(mapToGLCoordX(x), mapToGLCoordY(y))) {
@@ -191,7 +191,7 @@ GLvoid Mouse(int button, int state, int x, int y)
 		}
 		findIndex = -1;
 	}
-	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {	// 오른쪽 클릭
+	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {	// 우클릭
 		// 사각형 분리 로직 쓰기
 		for (int i = 1; i < rectangles.size(); ++i) {
 			if (rectangles[i].is_contain(mapToGLCoordX(x), mapToGLCoordY(y))) {
