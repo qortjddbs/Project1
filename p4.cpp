@@ -13,6 +13,7 @@ GLvoid Reshape(int w, int h);
 GLvoid Keyboard(unsigned char key, int x, int y);
 GLvoid Mouse(int button, int state, int x, int y);
 GLvoid Motion(int x, int y);
+GLvoid TimerFunction(int value);
 // GLfloat bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // 초기값 : 흰색 
 bool left_button = false;
 bool right_button = false;
@@ -20,6 +21,7 @@ bool right_button = false;
 std::random_device rd;  // 시드값을 얻기 위한 random_device 생성.
 std::mt19937 gen(rd());	// random_device 를 통해 난수 생성 엔진을 초기화 한다.
 std::uniform_real_distribution<float> dis(0.0f, 1.0f); // 0.0f 부터 1.0f 까지 균등하게 나타나는 난수열을 생성하기 위해 균등 분포 정의.
+std::uniform_real_distribution<float> dis_direction(-1.0f, 1.0f);
 
 class RECTANGLE {
 public:
@@ -54,7 +56,11 @@ float mapToGLCoordY(int y) {
 std::vector<RECTANGLE> rectangles;
 
 void MoveToCorner() {
-	
+	for (int i = 1; i < rectangles.size(); ++i) {
+		rectangles[i].x += dis_direction(gen) * 0.1f;
+		rectangles[i].y += dis_direction(gen) * 0.1f;
+	}
+	glutTimerFunc(100, TimerFunction, 1); // 타이머 함수 설정
 }
 
 void initBackground() {
@@ -89,6 +95,14 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutKeyboardFunc(Keyboard); //--- 키보드 입력 콜백함수 지정
 	glutMainLoop(); // 이벤트 처리 시작
 }
+
+GLvoid TimerFunction(int value)
+{
+	
+	glutPostRedisplay(); // 화면 재 출력
+	glutTimerFunc(100, TimerFunction, 1); // 타이머함수 재 설정
+}
+
 
 GLvoid drawScene() //--- 콜백 함수: 출력 콜백 함수 
 {
