@@ -54,7 +54,7 @@ float mapToGLCoordY(int y) {
 std::vector<RECTANGLE> rectangles;
 
 void MoveToCorner() {
-
+	
 }
 
 void initBackground() {
@@ -86,7 +86,6 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutDisplayFunc(drawScene); // 출력 콜백함수의 지정
 	glutReshapeFunc(Reshape); // 다시 그리기 콜백함수 지정
 	glutMouseFunc(Mouse);
-	glutMotionFunc(Motion);
 	glutKeyboardFunc(Keyboard); //--- 키보드 입력 콜백함수 지정
 	glutMainLoop(); // 이벤트 처리 시작
 }
@@ -112,6 +111,10 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	case '1':
 		MoveToCorner();
 		break;
+
+	//case '2':
+	//
+	//	break;
 
 	case 'q':
 		glutLeaveMainLoop();
