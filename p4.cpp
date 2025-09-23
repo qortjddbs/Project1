@@ -16,7 +16,6 @@ GLvoid Motion(int x, int y);
 // GLfloat bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // 초기값 : 흰색 
 bool left_button = false;
 bool right_button = false;
-int findIndex = -1;
 
 std::random_device rd;  // 시드값을 얻기 위한 random_device 생성.
 std::mt19937 gen(rd());	// random_device 를 통해 난수 생성 엔진을 초기화 한다.
@@ -53,6 +52,10 @@ float mapToGLCoordY(int y) {
 }
 
 std::vector<RECTANGLE> rectangles;
+
+void MoveToCorner() {
+
+}
 
 void initBackground() {
 	rectangles.push_back(RECTANGLE(0.0f, 0.0f, 1.0f, 1.0f, 0.2f, 0.2f, 0.2f)); // 배경 background 백그라운드
@@ -106,6 +109,10 @@ GLvoid Reshape(int w, int h) //--- 콜백 함수: 다시 그리기 콜백 함수
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
+	case '1':
+		MoveToCorner();
+		break;
+
 	case 'q':
 		glutLeaveMainLoop();
 		break;
@@ -119,15 +126,6 @@ GLvoid Mouse(int button, int state, int x, int y)
 	float Mouse_y = mapToGLCoordY(y);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {	// 좌클릭
 		if (rectangles.size() < 6) addRectangles(Mouse_x, Mouse_y);
-	}
-
-	glutPostRedisplay(); //--- 배경색이 바뀔 때마다 출력 콜백 함수를 호출하여 화면을 refresh 한다
-}
-
-GLvoid Motion(int x, int y) {
-	if (left_button == true && findIndex != -1) {
-		rectangles[findIndex].x = mapToGLCoordX(x);
-		rectangles[findIndex].y = mapToGLCoordY(y);
 	}
 
 	glutPostRedisplay(); //--- 배경색이 바뀔 때마다 출력 콜백 함수를 호출하여 화면을 refresh 한다
