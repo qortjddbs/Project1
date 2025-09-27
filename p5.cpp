@@ -108,6 +108,7 @@ GLvoid drawScene() //--- 콜백 함수: 출력 콜백 함수
 {
 	rectangles[0].draw();
 	for (int i = 1; i < rectangles.size(); ++i) {
+		if (eraser == false) continue;
 		rectangles[i].draw();
 	}
 	// 그리기 부분 구현: 그리기 관련 부분이 여기에 포함된다.
@@ -213,9 +214,9 @@ GLvoid Mouse(int button, int state, int x, int y)
 }
 
 GLvoid Motion(int x, int y) {
-	if (left_button == true && findIndex != -1) {
-		rectangles[findIndex].x = mapToGLCoordX(x);
-		rectangles[findIndex].y = mapToGLCoordY(y);
+	if (left_button == true && eraser) {
+		rectangles[1].x = mapToGLCoordX(x);
+		rectangles[1].y = mapToGLCoordY(y);
 	}
 
 	glutPostRedisplay(); //--- 배경색이 바뀔 때마다 출력 콜백 함수를 호출하여 화면을 refresh 한다
