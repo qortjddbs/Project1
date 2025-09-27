@@ -41,9 +41,9 @@ public:
 		glRectf(x - width, y + height, x + width, y - height);
 	}
 
-	bool is_contain(float mx, float my) const {
-		return mx >= x - width && mx <= x + width && my >= y - height && my <= y + height;
-	}
+	//bool is_contain(float mx, float my) const {
+	//	return mx >= x - width && mx <= x + width && my >= y - height && my <= y + height;
+	//}
 
 	void randomColor() {
 		r = dis(gen);
@@ -72,10 +72,13 @@ std::vector<RECTANGLE> rectangles;
 void initBackground() {
 	rectangles.push_back(RECTANGLE(0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f)); // 중앙
 	rectangles.push_back(RECTANGLE(0.0f, 0.0f, 0.1f, 0.1f, 0.0f, 0.0f, 0.0f)); // 중앙
+	for (int i = 0; i < 30; ++i) {
+		rectangles.push_back(RECTANGLE(dis_coord(gen), dis_coord(gen), 0.05f, 0.05f, dis(gen), dis(gen), dis(gen)));
+	}
 }
 
-void addRectangles() {
-	rectangles.push_back(RECTANGLE(dis_coord(gen), dis_coord(gen), 0.1f, 0.1f, dis(gen), dis(gen), dis(gen))); // 중앙
+void addRectangles(float x, float y) {
+	rectangles.push_back(RECTANGLE(x, y, 0.05f, 0.05f, dis(gen), dis(gen), dis(gen))); // 중앙
 }
 
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정 
@@ -107,8 +110,8 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 GLvoid drawScene() //--- 콜백 함수: 출력 콜백 함수 
 {
 	rectangles[0].draw();
-	for (int i = 1; i < rectangles.size(); ++i) {
-		if (eraser == false) continue;
+	if (eraser) rectangles[1].draw();
+	for (int i = 2; i < rectangles.size(); ++i) {
 		rectangles[i].draw();
 	}
 	// 그리기 부분 구현: 그리기 관련 부분이 여기에 포함된다.
@@ -141,72 +144,22 @@ GLvoid Mouse(int button, int state, int x, int y)
 	float Mouse_y = mapToGLCoordY(y);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {	// 좌클릭
 		left_button = true;
+		rectangles[1].x = mapToGLCoordX(x);
+		rectangles[1].y = mapToGLCoordY(y);
 		eraser = true;
-		for (int i = rectangles.size() - 1; i > 0; --i) {
-			if (rectangles[i].is_contain(mapToGLCoordX(x), mapToGLCoordY(y))) {
-				findIndex = i;
-				break;
-			}
-		}
 	}
 	else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		left_button = false;
 		eraser = false;
-		float x1, x2, y1, y2;
-		for (int i = rectangles.size() - 1; i > 0; --i) {
-			if (i == findIndex) continue;
-			if (is_combine(rectangles[i], rectangles[findIndex])) {
-				if (rectangles[i].x - rectangles[i].width < rectangles[findIndex].x - rectangles[findIndex].width) {
-					x1 = rectangles[i].x - rectangles[i].width;
-				}
-				else {
-					x1 = rectangles[findIndex].x - rectangles[findIndex].width;
-				}
-
-				if (rectangles[i].y + rectangles[i].height > rectangles[findIndex].y + rectangles[findIndex].height) {
-					y1 = rectangles[i].y + rectangles[i].height;
-				}
-				else {
-					y1 = rectangles[findIndex].y + rectangles[findIndex].height;
-				}
-
-				if (rectangles[i].x + rectangles[i].width > rectangles[findIndex].x + rectangles[findIndex].width) {
-					x2 = rectangles[i].x + rectangles[i].width;
-				}
-				else {
-					x2 = rectangles[findIndex].x + rectangles[findIndex].width;
-				}
-
-				if (rectangles[i].y - rectangles[i].height < rectangles[findIndex].y - rectangles[findIndex].height) {
-					y2 = rectangles[i].y - rectangles[i].height;
-				}
-				else {
-					y2 = rectangles[findIndex].y - rectangles[findIndex].height;
-				}
-
-				rectangles.push_back(RECTANGLE((x1 + x2) / 2, (y1 + y2) / 2, (x2 - x1) / 2, (y1 - y2) / 2, dis(gen), dis(gen), dis(gen)));
-				if (i < findIndex) {
-					rectangles.erase(rectangles.begin() + i);
-					rectangles.erase(rectangles.begin() + findIndex - 1);
-				}
-				else {
-					rectangles.erase(rectangles.begin() + i);
-					rectangles.erase(rectangles.begin() + findIndex);
-				}
-				break;
-			}
-		}
-		findIndex = -1;
+		rectangles[1].r = 0.0f;
+		rectangles[1].g = 0.0f;
+		rectangles[1].b = 0.0f;
 	}
 	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {	// 우클릭
-		// 사각형 분리 로직 쓰기
-		for (int i = 1; i < rectangles.size(); ++i) {
-			if (rectangles[i].is_contain(mapToGLCoordX(x), mapToGLCoordY(y))) {
-				rectangles.push_back(RECTANGLE(rectangles[i].x + dis_center(gen), rectangles[i].y + dis_center(gen), dis_size(gen), dis_size(gen), dis(gen), dis(gen), dis(gen)));
-				rectangles.push_back(RECTANGLE(rectangles[i].x + dis_center(gen), rectangles[i].y + dis_center(gen), dis_size(gen), dis_size(gen), dis(gen), dis(gen), dis(gen)));
-				rectangles.erase(rectangles.begin() + i);
-				break;
-			}
+		if (rectangles.size() < 30) {
+			addRectangles(Mouse_x, Mouse_y);
+			rectangles[1].width -= 0.02f;
+			rectangles[1].height -= 0.02f;
 		}
 	}
 
@@ -217,6 +170,20 @@ GLvoid Motion(int x, int y) {
 	if (left_button == true && eraser) {
 		rectangles[1].x = mapToGLCoordX(x);
 		rectangles[1].y = mapToGLCoordY(y);
+	}
+
+	if (left_button == true && eraser) {
+		for (int i = rectangles.size() - 1; i > 1; --i) {
+			// 지우개(rectangles[1])와 다른 사각형(rectangles[i])이 겹치는지 체크
+			if (is_combine(rectangles[1], rectangles[i])) {
+				rectangles[1].r = rectangles[i].r;
+				rectangles[1].g = rectangles[i].g;
+				rectangles[1].b = rectangles[i].b;
+				rectangles.erase(rectangles.begin() + i);
+				rectangles[1].width += 0.02f;
+				rectangles[1].height += 0.02f;
+			}
+		}
 	}
 
 	glutPostRedisplay(); //--- 배경색이 바뀔 때마다 출력 콜백 함수를 호출하여 화면을 refresh 한다
