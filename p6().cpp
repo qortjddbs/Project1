@@ -175,7 +175,7 @@ GLvoid Mouse(int button, int state, int x, int y)
 	float Mouse_y = mapToGLCoordY(y);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {	// 좌클릭
 		left_button = true;
-		for (int i = 1; i < rectangles.size(); ++i) {
+		for (int i = rectangles.size() - 1; i >= 1; --i) {
 			if (rectangles[i].is_contain(Mouse_x, Mouse_y) && !rectangles[i].isMoving) {
 				// 클릭한 사각형을 8개의 작은 사각형으로 분할하고 퍼뜨리기
 				addMovingRectangles(rectangles[i].x, rectangles[i].y, rectangles[i].width, rectangles[i].height, rectangles[i].r, rectangles[i].g, rectangles[i].b);
