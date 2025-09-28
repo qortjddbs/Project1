@@ -15,7 +15,6 @@ GLvoid Mouse(int button, int state, int x, int y);
 GLvoid Motion(int x, int y);
 GLfloat bgColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; // 초기값 : 흰색 
 bool left_button = false;
-bool right_button = false;
 int findIndex = -1;
 
 std::random_device rd;  // 시드값을 얻기 위한 random_device 생성.
@@ -40,19 +39,16 @@ public:
 		glRectf(x - width, y + height, x + width, y - height);
 	}
 
+	bool is_contain(float mx, float my) const {
+		return mx >= x - width && mx <= x + width && my >= y - height && my <= y + height;
+	}
+
 	void randomColor() {
 		r = dis(gen);
 		g = dis(gen);
 		b = dis(gen);
 	}
 };
-
-bool is_combine(RECTANGLE& rect1, RECTANGLE& rect2) {
-	// 두 사각형이 겹치는지 확인
-	bool overlapX = (rect1.x - rect1.width < rect2.x + rect2.width) && (rect1.x + rect1.width > rect2.x - rect2.width);
-	bool overlapY = (rect1.y - rect1.height < rect2.y + rect2.height) && (rect1.y + rect1.height > rect2.y - rect2.height);
-	return overlapX && overlapY;
-}
 
 float mapToGLCoordX(int x) {
 	return (static_cast<float>(x) / (WINDOW_WIDTH / 2)) - 1.0f;
@@ -65,14 +61,14 @@ float mapToGLCoordY(int y) {
 std::vector<RECTANGLE> rectangles;
 
 void initBackground() {
-	rectangles.push_back(RECTANGLE(0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f)); // 중앙
+	rectangles.push_back(RECTANGLE(0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f)); // 배경 background 백그라운드
 	for (int i = 0; i < 5; ++i) {
 		rectangles.push_back(RECTANGLE(dis_coord(gen), dis_coord(gen), dis_size(gen), dis_size(gen), dis(gen), dis(gen), dis(gen)));
 	}
 }
 
 void addRectangles(float x, float y) {
-	rectangles.push_back(RECTANGLE(x, y, 0.05f, 0.05f, dis(gen), dis(gen), dis(gen))); // 중앙
+	// rectangles.push_back(RECTANGLE(x, y, 0.05f, 0.05f, dis(gen), dis(gen), dis(gen))); // 중앙
 }
 
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정 
@@ -132,20 +128,11 @@ GLvoid Mouse(int button, int state, int x, int y)
 	float Mouse_y = mapToGLCoordY(y);
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {	// 좌클릭
 		left_button = true;
-		rectangles[1].x = mapToGLCoordX(x);
-		rectangles[1].y = mapToGLCoordY(y);
-	}
-	else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-		left_button = false;
-		rectangles[1].r = 0.0f;
-		rectangles[1].g = 0.0f;
-		rectangles[1].b = 0.0f;
-	}
-	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {	// 우클릭
-		if (rectangles.size() < 30) {
-			addRectangles(Mouse_x, Mouse_y);
-			rectangles[1].width -= 0.02f;
-			rectangles[1].height -= 0.02f;
+		for (int i = 1; i < rectangles.size(); ++i) {
+			if (rectangles[i].is_contain(Mouse_x, Mouse_y)) {
+				findIndex = i;
+				break;
+			}
 		}
 	}
 
@@ -153,24 +140,6 @@ GLvoid Mouse(int button, int state, int x, int y)
 }
 
 GLvoid Motion(int x, int y) {
-	if (left_button == true) {
-		rectangles[1].x = mapToGLCoordX(x);
-		rectangles[1].y = mapToGLCoordY(y);
-	}
-
-	if (left_button == true) {
-		for (int i = rectangles.size() - 1; i > 1; --i) {
-			// 지우개(rectangles[1])와 다른 사각형(rectangles[i])이 겹치는지 체크
-			if (is_combine(rectangles[1], rectangles[i])) {
-				rectangles[1].r = rectangles[i].r;
-				rectangles[1].g = rectangles[i].g;
-				rectangles[1].b = rectangles[i].b;
-				rectangles.erase(rectangles.begin() + i);
-				rectangles[1].width += 0.02f;
-				rectangles[1].height += 0.02f;
-			}
-		}
-	}
 
 	glutPostRedisplay(); //--- 배경색이 바뀔 때마다 출력 콜백 함수를 호출하여 화면을 refresh 한다
 }
