@@ -130,10 +130,12 @@ GLvoid Mouse(int button, int state, int x, int y)
 		left_button = true;
 		for (int i = 1; i < rectangles.size(); ++i) {
 			if (rectangles[i].is_contain(Mouse_x, Mouse_y)) {
-				findIndex = i;
+				rectangles.erase(rectangles.begin() + i);
 				break;
 			}
 		}
+
+		
 	}
 
 	glutPostRedisplay(); //--- 배경색이 바뀔 때마다 출력 콜백 함수를 호출하여 화면을 refresh 한다
