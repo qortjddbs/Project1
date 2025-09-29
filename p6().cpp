@@ -64,14 +64,7 @@ public:
 			y += dy;
 			width -= shrinkRate;
 			height -= shrinkRate;
-			
-			// 화면 경계에서 반사
-			// if (x - width <= -1.0f || x + width >= 1.0f) {
-			// 	dx = -dx;
-			// }
-			// if (y - height <= -1.0f || y + height >= 1.0f) {
-			// 	dy = -dy;
-			// }
+
 		}
 	}
 
