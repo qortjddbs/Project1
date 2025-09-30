@@ -94,7 +94,43 @@ void addRectangles(float x, float y, float width, float height, float r, float g
 	rectangles.push_back(RECTANGLE(x, y, width, height, r, g, b)); // 중앙
 }
 
-void addMovingRectangles(float centerX, float centerY, float width, float height, float r, float g, float b) {
+void Moving1(float centerX, float centerY, float width, float height, float r, float g, float b) {
+	float speed = 0.01f;
+	float newWidth = width * 0.3f;
+	float newHeight = height * 0.3f;
+	
+	// 상하좌우로 작은 사각형들 생성
+	rectangles.push_back(RECTANGLE(centerX, centerY + height * 0.3f, newWidth, newHeight, r, g, b, 0, speed));        // 위
+	rectangles.push_back(RECTANGLE(centerX, centerY - height * 0.3f, newWidth, newHeight, r, g, b, 0, -speed));       // 아래
+	rectangles.push_back(RECTANGLE(centerX - width * 0.3f, centerY, newWidth, newHeight, r, g, b, -speed, 0));        // 왼쪽
+	rectangles.push_back(RECTANGLE(centerX + width * 0.3f, centerY, newWidth, newHeight, r, g, b, speed, 0));         // 오른쪽
+}
+
+void Moving2(float centerX, float centerY, float width, float height, float r, float g, float b) {
+	float speed = 0.01f;
+	float newWidth = width * 0.3f;
+	float newHeight = height * 0.3f;
+
+	// 대각선으로 작은 사각형들 생성
+	rectangles.push_back(RECTANGLE(centerX + width * 0.3f, centerY + height * 0.3f, newWidth, newHeight, r, g, b, speed, speed));        // 우상단
+	rectangles.push_back(RECTANGLE(centerX + width * 0.3f, centerY - height * 0.3f, newWidth, newHeight, r, g, b, speed, -speed));       // 우하단
+	rectangles.push_back(RECTANGLE(centerX - width * 0.3f, centerY + height * 0.3f, newWidth, newHeight, r, g, b, -speed, speed));        // 좌상단
+	rectangles.push_back(RECTANGLE(centerX - width * 0.3f, centerY - height * 0.3f, newWidth, newHeight, r, g, b, -speed, -speed));         // 좌하단
+}
+
+void Moving3(float centerX, float centerY, float width, float height, float r, float g, float b) {
+	float speed = 0.01f;
+	float newWidth = width * 0.3f;
+	float newHeight = height * 0.3f;
+
+	// 대각선으로 작은 사각형들 생성
+	rectangles.push_back(RECTANGLE(centerX + width * 0.3f, centerY + height * 0.3f, newWidth, newHeight, r, g, b, speed, 0));        // 우상단
+	rectangles.push_back(RECTANGLE(centerX + width * 0.3f, centerY - height * 0.3f, newWidth, newHeight, r, g, b, speed, 0));       // 우하단
+	rectangles.push_back(RECTANGLE(centerX - width * 0.3f, centerY + height * 0.3f, newWidth, newHeight, r, g, b, speed, 0));        // 좌상단
+	rectangles.push_back(RECTANGLE(centerX - width * 0.3f, centerY - height * 0.3f, newWidth, newHeight, r, g, b, speed, 0));         // 좌하단
+}
+
+void Moving8Direction(float centerX, float centerY, float width, float height, float r, float g, float b) {
 	float speed = 0.01f;
 	float newWidth = width * 0.3f;
 	float newHeight = height * 0.3f;
@@ -170,8 +206,19 @@ GLvoid Mouse(int button, int state, int x, int y)
 		left_button = true;
 		for (int i = rectangles.size() - 1; i >= 1; --i) {
 			if (rectangles[i].is_contain(Mouse_x, Mouse_y) && !rectangles[i].isMoving) {
-				// 클릭한 사각형을 8개의 작은 사각형으로 분할하고 퍼뜨리기
-				addMovingRectangles(rectangles[i].x, rectangles[i].y, rectangles[i].width, rectangles[i].height, rectangles[i].r, rectangles[i].g, rectangles[i].b);
+				int num = (rand() % 4) + 1;
+				if (num == 1) {
+					Moving1(rectangles[i].x, rectangles[i].y, rectangles[i].width, rectangles[i].height, rectangles[i].r, rectangles[i].g, rectangles[i].b);
+				}
+				else if (num == 2) {
+					Moving2(rectangles[i].x, rectangles[i].y, rectangles[i].width, rectangles[i].height, rectangles[i].r, rectangles[i].g, rectangles[i].b);
+				} 
+				else if (num == 3) {
+					Moving3(rectangles[i].x, rectangles[i].y, rectangles[i].width, rectangles[i].height, rectangles[i].r, rectangles[i].g, rectangles[i].b);
+				}
+				else if (num == 4) {
+					Moving8Direction(rectangles[i].x, rectangles[i].y, rectangles[i].width, rectangles[i].height, rectangles[i].r, rectangles[i].g, rectangles[i].b);
+				}
 				rectangles.erase(rectangles.begin() + i);
 				animationRunning = true;
 				break;
